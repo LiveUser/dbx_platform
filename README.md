@@ -186,7 +186,12 @@ await dbx.createFileFromMemory(
 ~~~dart
 SearchResults searchResults = await dbx.search(searchQuery: "file full of metadata");
 ~~~
-
+## Search continue
+~~~dart
+await dbx.searchContinue(
+  cursor: "cursor from the previous search",
+);
+~~~
 ------------------------------------------------------------
 # Note
 Must choose Full Dropbox access in order to avoid getting an error when using the tag functions. I don't know why but unfortunately that's how it works(or at least in April 29 2022 9am UTC-4).

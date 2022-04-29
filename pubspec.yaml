@@ -1,17 +1,13 @@
 name: dbx_platform
 description: An unofficial dropbox platform package.
 
-version: 1.1.6+8
+version: 1.1.7+9
+
+repository: https://github.com/LiveUser/dbx_platform
 
 environment:
   sdk: ">=2.16.2 <3.0.0"
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
 dependencies:
   sexy_api_client: ^0.0.4+4
 

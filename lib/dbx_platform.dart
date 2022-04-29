@@ -638,7 +638,7 @@ class DBX {
         "file_categories" : allFileCategories,
       });
     }
-    //TODO: Perform the http request
+    //Perform the http request
     String response = await SexyAPI(
       url: "https://api.dropboxapi.com",
       path: "/2/files/search_v2",
@@ -651,6 +651,7 @@ class DBX {
       body: jsonEncode(parameters),
     );
     _errorThrower(response);
+    //Parse the search results
     Map<String,dynamic> parsedJSON = jsonDecode(response);
     List<DBX_Item> items = [];
     //Parse the items
@@ -702,5 +703,75 @@ class DBX {
       cursor: parsedJSON["cursor"],
     );
   }
-  //TODO: Search continue function
+  ///Fetches the next page of search results returned from search:2. Note: search:2 along with search/continue:2 can only be used to retrieve a maximum of 10,000 matches. Recent changes may not immediately be reflected in search results due to a short delay in indexing. Duplicate results may be returned across pages. Some results may not be returned.
+  Future<SearchResults> searchContinue({
+    required String cursor,
+  })async{
+    Map<String,dynamic> parameters = {
+      "cursor": cursor,
+    };
+    String response = await SexyAPI(
+      url: "https://api.dropboxapi.com",
+      path: "/2/files/search/continue_v2",
+      parameters: {},
+    ).post(
+      headers: {
+        "Content-Type" : "application/json",
+        "Authorization" : "Bearer $accessToken",
+      },
+      body: jsonEncode(parameters),
+    );
+    _errorThrower(response);
+    //Parse the search results
+    Map<String,dynamic> parsedJSON = jsonDecode(response);
+    List<DBX_Item> items = [];
+    //Parse the items
+    for(Map<String,dynamic> match in parsedJSON["matches"]){
+      Map<String,dynamic> item = match["metadata"]["metadata"];
+      String typeOfItem = item[".tag"];
+      String itemPath = item["path_display"];
+      if(typeOfItem == "file"){
+        items.add(DBX_Item(
+            path: itemPath,
+            metadata: DBX_Item_Metadata(
+              tag: typeOfItem,
+              client_modified: DateTime.parse(item["client_modified"]),
+              content_hash: item["content_hash"],
+              id: item["id"],
+              is_downloadable: item["is_downloadable"],
+              name : item["name"],
+              path_display: itemPath,
+              path_lower: item["path_lower"],
+              rev: item["rev"],
+              server_modified: DateTime.parse(item["server_modified"]),
+              size: item["size"],
+            ),
+          ),
+        );
+      }else{
+        items.add(DBX_Directory(
+            path: itemPath,
+            metadata: DBX_Item_Metadata(
+              tag: typeOfItem,
+              client_modified: item["client_modified"],
+              content_hash: item["content_hash"],
+              id: item["id"],
+              is_downloadable: item["is_downloadable"],
+              name : item["name"],
+              path_display: item["path_display"],
+              path_lower: item["path_lower"],
+              rev: item["rev"],
+              server_modified: item["server_modified"],
+              size: item["size"],
+            ),
+          ),
+        );
+      }
+    }
+    return SearchResults(
+      has_more: parsedJSON["has_more"], 
+      items: items,
+      cursor: parsedJSON["cursor"],
+    );
+  }
 }

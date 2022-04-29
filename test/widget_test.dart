@@ -164,4 +164,9 @@ void main() {
     ]);
     print(filesWithTags);
   });
+  test("Search continue", ()async{
+    await dbx.searchContinue(
+      cursor: "cursor from the previous search",
+    );
+  });
 }
