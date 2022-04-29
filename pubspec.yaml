@@ -1,7 +1,7 @@
 name: dbx_platform
 description: An unofficial dropbox platform package.
 
-version: 1.0.0+1
+version: 1.1.6+8
 
 environment:
   sdk: ">=2.16.2 <3.0.0"
